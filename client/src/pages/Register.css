@@ -1,0 +1,308 @@
+.register-page {
+    min-height: 100vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 30px;
+
+    background: #0f172a;
+
+    color: #ffffff;
+}
+
+
+/* =========================
+   CARD
+========================= */
+
+.register-card {
+    width: 100%;
+    max-width: 440px;
+
+    padding: 35px;
+
+    background: #1e293b;
+
+    border: 1px solid #334155;
+
+    border-radius: 16px;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+
+/* =========================
+   LOGO
+========================= */
+
+.register-logo {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 12px;
+
+    margin-bottom: 25px;
+}
+
+.register-logo-icon {
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #2563eb;
+
+    border-radius: 10px;
+
+    font-size: 22px;
+}
+
+.register-logo h1 {
+    margin: 0;
+
+    font-size: 24px;
+
+    color: #ffffff;
+}
+
+
+/* =========================
+   TITLE
+========================= */
+
+.register-title {
+    text-align: center;
+
+    margin-bottom: 25px;
+}
+
+.register-title h2 {
+    margin: 0 0 8px;
+
+    font-size: 26px;
+}
+
+.register-title p {
+    margin: 0;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+
+/* =========================
+   ERROR
+========================= */
+
+.register-error {
+    margin-bottom: 18px;
+
+    padding: 12px 14px;
+
+    border-radius: 8px;
+
+    background: #451a1a;
+
+    border: 1px solid #7f1d1d;
+
+    color: #fca5a5;
+
+    font-size: 14px;
+}
+
+
+/* =========================
+   SUCCESS
+========================= */
+
+.register-success {
+    margin-bottom: 18px;
+
+    padding: 12px 14px;
+
+    border-radius: 8px;
+
+    background: #052e16;
+
+    border: 1px solid #166534;
+
+    color: #86efac;
+
+    font-size: 14px;
+}
+
+
+/* =========================
+   FORM
+========================= */
+
+.register-form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 18px;
+}
+
+
+/* =========================
+   FIELD
+========================= */
+
+.register-field {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.register-field label {
+    font-size: 14px;
+
+    font-weight: 500;
+
+    color: #e2e8f0;
+}
+
+.register-field input {
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 13px 14px;
+
+    border: 1px solid #475569;
+
+    border-radius: 8px;
+
+    outline: none;
+
+    background: #0f172a;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    transition: 0.2s ease;
+}
+
+.register-field input::placeholder {
+    color: #64748b;
+}
+
+.register-field input:focus {
+    border-color: #3b82f6;
+
+    box-shadow:
+        0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+
+/* =========================
+   REGISTER BUTTON
+========================= */
+
+.register-button {
+    width: 100%;
+
+    margin-top: 5px;
+
+    padding: 13px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.register-button:hover {
+    background: #1d4ed8;
+}
+
+.register-button:disabled {
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+
+/* =========================
+   LOGIN LINK
+========================= */
+
+.login-link {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    margin-top: 25px;
+
+    color: #94a3b8;
+
+    font-size: 14px;
+}
+
+.login-link button {
+    padding: 0;
+
+    border: none;
+
+    background: transparent;
+
+    color: #60a5fa;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.login-link button:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 500px) {
+
+    .register-page {
+        padding: 15px;
+    }
+
+    .register-card {
+        padding: 25px 20px;
+    }
+
+    .register-title h2 {
+        font-size: 23px;
+    }
+}
