@@ -1,9 +1,10 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "../services/api";
 import "./AIAssistant.css";
 
 function AIAssistant() {
     const [message, setMessage] = useState("");
+
     const [messages, setMessages] = useState([
         {
             role: "ai",
@@ -35,22 +36,21 @@ function AIAssistant() {
         setLoading(true);
 
         try {
-            const token = localStorage.getItem("token");
+            // ==========================================
+            // AI ASSISTANT REQUEST
+            // ==========================================
 
-            const response = await axios.post(
-                "http://localhost:5000/api/v1/ai/assistant",
+            const response = await api.post(
+                "/ai/assistant",
                 {
                     message: userMessage,
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
                 }
             );
 
-            // Add AI response
+            // ==========================================
+            // AI RESPONSE
+            // ==========================================
+
             setMessages((previous) => [
                 ...previous,
                 {
@@ -85,7 +85,10 @@ function AIAssistant() {
     return (
         <div className="ai-page">
 
-            {/* Header */}
+            {/* ==========================================
+                HEADER
+            ========================================== */}
+
             <div className="ai-header">
 
                 <div>
@@ -98,8 +101,10 @@ function AIAssistant() {
 
             </div>
 
+            {/* ==========================================
+                CHAT
+            ========================================== */}
 
-            {/* Chat */}
             <div className="ai-chat">
 
                 {messages.map((item, index) => (
@@ -137,8 +142,8 @@ function AIAssistant() {
 
                 ))}
 
-
                 {/* Loading */}
+
                 {loading && (
 
                     <div className="message ai-message">
@@ -165,8 +170,10 @@ function AIAssistant() {
 
             </div>
 
+            {/* ==========================================
+                INPUT
+            ========================================== */}
 
-            {/* Input */}
             <form
                 className="ai-input-container"
                 onSubmit={handleSubmit}
