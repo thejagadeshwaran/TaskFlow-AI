@@ -1,20 +1,17 @@
 import axios from "axios";
 
-
 // ==========================================
 // AXIOS API INSTANCE
 // ==========================================
 
 const api = axios.create({
-
-    baseURL: "http://localhost:5000/api/v1",
+    baseURL: import.meta.env.VITE_API_URL,
 
     timeout: 10000,
 
     headers: {
         "Content-Type": "application/json"
     }
-
 });
 
 
@@ -26,9 +23,7 @@ api.interceptors.request.use(
 
     (config) => {
 
-        const token =
-            localStorage.getItem("token");
-
+        const token = localStorage.getItem("token");
 
         console.log(
             "================================="
@@ -49,6 +44,11 @@ api.interceptors.request.use(
         );
 
         console.log(
+            "Base URL:",
+            config.baseURL
+        );
+
+        console.log(
             "Token exists:",
             !!token
         );
@@ -64,7 +64,6 @@ api.interceptors.request.use(
                 `Bearer ${token}`;
 
         }
-
 
         return config;
 
@@ -115,7 +114,6 @@ api.interceptors.response.use(
             "================================="
         );
 
-
         return response;
 
     },
@@ -153,7 +151,6 @@ api.interceptors.response.use(
         console.error(
             "================================="
         );
-
 
         return Promise.reject(error);
 
