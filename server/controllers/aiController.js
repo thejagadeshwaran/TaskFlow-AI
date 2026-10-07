@@ -5,6 +5,7 @@ const aiAssistant = async (req, res) => {
     try {
         const { message } = req.body;
 
+        // Validate message
         if (!message || !message.trim()) {
             return res.status(400).json({
                 success: false,
@@ -12,15 +13,19 @@ const aiAssistant = async (req, res) => {
             });
         }
 
+        // Check API key
         const apiKey = process.env.GEMINI_API_KEY;
 
         if (!apiKey) {
+            console.error("❌ GEMINI_API_KEY is missing");
+
             return res.status(500).json({
                 success: false,
                 message: "Gemini API key is not configured",
             });
         }
 
+        // Gemini model
         const model = "gemini-3.8-flash";
 
         const url =
@@ -35,7 +40,8 @@ const aiAssistant = async (req, res) => {
                             text: `
 You are TaskFlow AI, a productivity and project management assistant.
 
-Help users with:
+Your responsibilities:
+
 - Task management
 - Project planning
 - Task prioritization
@@ -43,9 +49,19 @@ Help users with:
 - Productivity
 - Time management
 - Software development
-- MERN stack projects
+- MERN stack development
+- Debugging
+- Git and GitHub
+- Interview preparation
 
 Give clear, practical and structured answers.
+
+Prefer:
+- Short explanations
+- Bullet points
+- Step-by-step solutions
+- Practical examples
+- Code examples when useful
 
 User message:
 ${message.trim()}
@@ -56,10 +72,16 @@ ${message.trim()}
             ],
         };
 
-        const maxRetries = 3;
+        console.log("=================================");
+        console.log("🤖 TaskFlow AI request");
+        console.log("=================================");
+        console.log("Message:", message.trim());
+        console.log("Model:", model);
+        console.log("=================================");
+
+        const maxRetries = 2;
 
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
-
             try {
                 console.log(
                     `🤖 Gemini request attempt ${attempt}/${maxRetries}`
@@ -73,6 +95,8 @@ ${message.trim()}
                             "Content-Type": "application/json",
                             "x-goog-api-key": apiKey,
                         },
+
+                        // Give Gemini enough time
                         timeout: 30000,
                     }
                 );
@@ -83,7 +107,7 @@ ${message.trim()}
 
                 if (!aiReply) {
                     console.error(
-                        "❌ Gemini returned no text:"
+                        "❌ Gemini returned no text"
                     );
 
                     console.error(
@@ -108,80 +132,53 @@ ${message.trim()}
                 });
 
             } catch (error) {
-
                 const status = error.response?.status;
+
+                const errorMessage =
+                    error.response?.data?.error?.message ||
+                    error.message;
 
                 console.error(
                     `❌ Gemini attempt ${attempt} failed`
                 );
 
-                console.error(
-                    "Status:",
-                    status
-                );
+                console.error("Status:", status);
+                console.error("Error:", errorMessage);
 
-                console.error(
-                    "Error:",
-                    error.response?.data?.error?.message ||
-                    error.message
-                );
-
-                // Retry only temporary server errors
+                // Retry temporary errors
                 if (
-                    status === 503 ||
-                    status === 429 ||
-                    status === 500
+                    (status === 429 ||
+                        status === 500 ||
+                        status === 503) &&
+                    attempt < maxRetries
                 ) {
+                    const delay = attempt * 2000;
 
-                    if (attempt < maxRetries) {
+                    console.log(
+                        `⏳ Retrying in ${delay / 1000} seconds...`
+                    );
 
-                        const delay = attempt * 2000;
+                    await new Promise((resolve) =>
+                        setTimeout(resolve, delay)
+                    );
 
-                        console.log(
-                            `⏳ Retrying in ${delay / 1000} seconds...`
-                        );
-
-                        await new Promise(
-                            resolve =>
-                                setTimeout(resolve, delay)
-                        );
-
-                        continue;
-                    }
+                    continue;
                 }
 
-                // Don't retry other errors
                 return res.status(status || 500).json({
                     success: false,
                     message: "AI Assistant failed",
-                    error:
-                        error.response?.data?.error?.message ||
-                        error.message,
+                    error: errorMessage,
                 });
             }
         }
 
     } catch (error) {
-
-        console.error(
-            "================================="
-        );
-
-        console.error(
-            "❌ AI ASSISTANT ERROR"
-        );
-
-        console.error(
-            "================================="
-        );
-
-        console.error(
-            error.message
-        );
-
-        console.error(
-            "================================="
-        );
+        console.error("=================================");
+        console.error("❌ AI ASSISTANT ERROR");
+        console.error("=================================");
+        console.error(error);
+        console.error("=================================");
 
         return res.status(500).json({
             success: false,
@@ -193,4 +190,23 @@ ${message.trim()}
 
 module.exports = {
     aiAssistant,
-};
+};const express = require("express");
+
+const {
+    aiAssistant
+} = require("../controllers/aiController");
+
+const {
+    protect
+} = require("../middleware/authMiddleware");
+
+const router = express.Router();
+
+// AI Productivity Assistant
+router.post(
+    "/assistant",
+    protect,
+    aiAssistant
+);
+
+module.exports = router;
