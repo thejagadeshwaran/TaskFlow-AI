@@ -1,17 +1,27 @@
 import axios from "axios";
 
 // ==========================================
+// API URL
+// ==========================================
+
+const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://taskflow-ai-7mpo.onrender.com/api/v1";
+
+
+// ==========================================
 // AXIOS API INSTANCE
 // ==========================================
 
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
+    baseURL: API_URL,
 
-    timeout: 10000,
+    // AI requests can take longer than 10 seconds
+    timeout: 60000,
 
     headers: {
-        "Content-Type": "application/json"
-    }
+        "Content-Type": "application/json",
+    },
 });
 
 
@@ -20,66 +30,32 @@ const api = axios.create({
 // ==========================================
 
 api.interceptors.request.use(
-
     (config) => {
 
         const token = localStorage.getItem("token");
 
-        console.log(
-            "================================="
-        );
-
-        console.log(
-            "📤 API REQUEST"
-        );
-
-        console.log(
-            "Method:",
-            config.method?.toUpperCase()
-        );
-
-        console.log(
-            "URL:",
-            config.url
-        );
-
-        console.log(
-            "Base URL:",
-            config.baseURL
-        );
-
-        console.log(
-            "Token exists:",
-            !!token
-        );
-
+        console.log("=================================");
+        console.log("📤 API REQUEST");
+        console.log("Method:", config.method?.toUpperCase());
+        console.log("URL:", config.url);
+        console.log("Base URL:", config.baseURL);
+        console.log("Token exists:", !!token);
 
         // ==========================================
         // ADD TOKEN
         // ==========================================
 
         if (token) {
-
-            config.headers.Authorization =
-                `Bearer ${token}`;
-
+            config.headers.Authorization = `Bearer ${token}`;
         }
 
         return config;
-
     },
 
     (error) => {
-
-        console.error(
-            "❌ REQUEST ERROR:",
-            error
-        );
-
+        console.error("❌ REQUEST ERROR:", error);
         return Promise.reject(error);
-
     }
-
 );
 
 
@@ -91,42 +67,19 @@ api.interceptors.response.use(
 
     (response) => {
 
-        console.log(
-            "📥 API RESPONSE"
-        );
-
-        console.log(
-            "Status:",
-            response.status
-        );
-
-        console.log(
-            "URL:",
-            response.config.url
-        );
-
-        console.log(
-            "Data:",
-            response.data
-        );
-
-        console.log(
-            "================================="
-        );
+        console.log("📥 API RESPONSE");
+        console.log("Status:", response.status);
+        console.log("URL:", response.config.url);
+        console.log("Data:", response.data);
+        console.log("=================================");
 
         return response;
-
     },
 
     (error) => {
 
-        console.error(
-            "================================="
-        );
-
-        console.error(
-            "❌ API RESPONSE ERROR"
-        );
+        console.error("=================================");
+        console.error("❌ API RESPONSE ERROR");
 
         console.error(
             "Status:",
@@ -139,6 +92,13 @@ api.interceptors.response.use(
         );
 
         console.error(
+            "Full URL:",
+            error.config
+                ? `${error.config.baseURL}${error.config.url}`
+                : undefined
+        );
+
+        console.error(
             "Server response:",
             error.response?.data
         );
@@ -148,14 +108,10 @@ api.interceptors.response.use(
             error.message
         );
 
-        console.error(
-            "================================="
-        );
+        console.error("=================================");
 
         return Promise.reject(error);
-
     }
-
 );
 
 
