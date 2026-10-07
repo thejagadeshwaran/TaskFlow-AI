@@ -3,14 +3,14 @@ const express = require("express");
 const router = express.Router();
 
 // ======================================================
-// 🧪 TEST ACTUAL GEMINI API
+// 🧪 LIST AVAILABLE GEMINI MODELS
 // ======================================================
 
-router.get("/gemini-api-test", async (req, res) => {
+router.get("/gemini-models", async (req, res) => {
     try {
 
         console.log("=================================");
-        console.log("🧪 TESTING ACTUAL GEMINI API");
+        console.log("🧪 LISTING AVAILABLE GEMINI MODELS");
         console.log("=================================");
 
         const apiKey = process.env.GEMINI_API_KEY;
@@ -25,9 +25,107 @@ router.get("/gemini-api-test", async (req, res) => {
         }
 
         console.log("✅ GEMINI_API_KEY exists");
-        console.log("🔄 Calling Gemini REST API...");
+        console.log("🔄 Requesting model list...");
 
-        const controller = new AbortController();
+        const response = await fetch(
+            "https://generativelanguage.googleapis.com/v1beta/models?key=" +
+                encodeURIComponent(apiKey)
+        );
+
+        const data = await response.json();
+
+        console.log(
+            "Gemini models HTTP status:",
+            response.status
+        );
+
+        if (!response.ok) {
+
+            console.error(
+                "❌ Failed to retrieve models"
+            );
+
+            return res.status(200).json({
+                success: false,
+                status: response.status,
+                error: data,
+            });
+        }
+
+        const models = (data.models || [])
+            .filter((model) =>
+                model.supportedGenerationMethods?.includes(
+                    "generateContent"
+                )
+            )
+            .map((model) => ({
+                name: model.name,
+                displayName: model.displayName,
+            }));
+
+        console.log(
+            `✅ Found ${models.length} generateContent models`
+        );
+
+        console.log("=================================");
+
+        return res.status(200).json({
+            success: true,
+            status: response.status,
+            models,
+        });
+
+    } catch (error) {
+
+        console.error("=================================");
+        console.error("❌ MODEL LIST ERROR");
+        console.error("=================================");
+        console.error("Error:", error.message);
+        console.error("=================================");
+
+        return res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+});
+
+// ======================================================
+// 🧪 TEST ACTUAL GEMINI API
+// ======================================================
+
+router.get("/gemini-api-test", async (req, res) => {
+
+    try {
+
+        console.log("=================================");
+        console.log("🧪 TESTING ACTUAL GEMINI API");
+        console.log("=================================");
+
+        const apiKey = process.env.GEMINI_API_KEY;
+
+        if (!apiKey) {
+
+            console.error(
+                "❌ GEMINI_API_KEY is missing"
+            );
+
+            return res.status(500).json({
+                success: false,
+                message: "GEMINI_API_KEY is missing",
+            });
+        }
+
+        console.log(
+            "✅ GEMINI_API_KEY exists"
+        );
+
+        console.log(
+            "🔄 Calling Gemini REST API..."
+        );
+
+        const controller =
+            new AbortController();
 
         const timeout = setTimeout(() => {
             controller.abort();
@@ -50,7 +148,8 @@ router.get("/gemini-api-test", async (req, res) => {
                             {
                                 parts: [
                                     {
-                                        text: "Reply with exactly: Hello from Gemini",
+                                        text:
+                                            "Reply with exactly: Hello from Gemini",
                                     },
                                 ],
                             },
@@ -63,7 +162,8 @@ router.get("/gemini-api-test", async (req, res) => {
 
             clearTimeout(timeout);
 
-            const responseText = await response.text();
+            const responseText =
+                await response.text();
 
             console.log(
                 "Gemini HTTP status:",
@@ -75,12 +175,15 @@ router.get("/gemini-api-test", async (req, res) => {
                 responseText.slice(0, 1000)
             );
 
-            console.log("=================================");
+            console.log(
+                "================================="
+            );
 
             return res.status(200).json({
                 success: response.ok,
                 status: response.status,
-                response: responseText.slice(0, 1000),
+                response:
+                    responseText.slice(0, 1000),
             });
 
         } catch (error) {
@@ -94,17 +197,26 @@ router.get("/gemini-api-test", async (req, res) => {
 
             return res.status(500).json({
                 success: false,
-                error: error.name === "AbortError"
-                    ? "Gemini request timed out after 30 seconds"
-                    : error.message,
+                error:
+                    error.name === "AbortError"
+                        ? "Gemini request timed out after 30 seconds"
+                        : error.message,
             });
         }
 
     } catch (error) {
 
         console.error(
+            "================================="
+        );
+
+        console.error(
             "❌ Test route error:",
             error.message
+        );
+
+        console.error(
+            "================================="
         );
 
         return res.status(500).json({
@@ -113,5 +225,9 @@ router.get("/gemini-api-test", async (req, res) => {
         });
     }
 });
+
+// ======================================================
+// EXPORT
+// ======================================================
 
 module.exports = router;
