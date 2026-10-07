@@ -22,6 +22,9 @@ const analyticsRoutes = require("./routes/analyticsRoutes");
 // 🤖 AI Routes
 const aiRoutes = require("./routes/aiRoutes");
 
+// 🧪 TEMPORARY GEMINI CONNECTION TEST ROUTE
+const testRoutes = require("./routes/testRoutes");
+
 const app = express();
 
 // ======================================================
@@ -144,11 +147,22 @@ app.use(
     analyticsRoutes
 );
 
-// 🤖 AI Productivity Assistant
+// ======================================================
+// 🤖 AI PRODUCTIVITY ASSISTANT
+// ======================================================
 
 app.use(
     "/api/v1/ai",
     aiRoutes
+);
+
+// ======================================================
+// 🧪 TEMPORARY GEMINI CONNECTION TEST
+// ======================================================
+
+app.use(
+    "/api/v1/test",
+    testRoutes
 );
 
 // ======================================================
