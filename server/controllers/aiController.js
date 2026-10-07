@@ -1,11 +1,18 @@
 const { GoogleGenAI } = require("@google/genai");
 
-// POST /api/v1/ai/assistant
+// ======================================================
+// 🤖 TASKFLOW AI ASSISTANT
+// ======================================================
+
 const aiAssistant = async (req, res) => {
     try {
+
         const { message } = req.body;
 
-        // Validate message
+        // ==================================================
+        // VALIDATE MESSAGE
+        // ==================================================
+
         if (!message || !message.trim()) {
             return res.status(400).json({
                 success: false,
@@ -13,35 +20,58 @@ const aiAssistant = async (req, res) => {
             });
         }
 
-        // Get Gemini API key
+        // ==================================================
+        // GEMINI API KEY
+        // ==================================================
+
         const apiKey = process.env.GEMINI_API_KEY;
 
         if (!apiKey) {
-            console.error("❌ GEMINI_API_KEY is missing");
+
+            console.error(
+                "❌ GEMINI_API_KEY is missing"
+            );
 
             return res.status(500).json({
                 success: false,
-                message: "Gemini API key is not configured",
+                message:
+                    "Gemini API key is not configured",
             });
         }
 
+        // ==================================================
+        // LOG REQUEST
+        // ==================================================
+
         console.log("=================================");
-        console.log("🤖 TaskFlow AI request");
+        console.log("🤖 TASKFLOW AI REQUEST");
         console.log("=================================");
-        console.log("Model: gemini-3.8-flash");
-        console.log("Message:", message.trim());
+        console.log(
+            "Model: gemini-3.5-flash"
+        );
+        console.log(
+            "Message:",
+            message.trim()
+        );
         console.log("=================================");
 
-        // Initialize Gemini
+        // ==================================================
+        // INITIALIZE GEMINI
+        // ==================================================
+
         const ai = new GoogleGenAI({
             apiKey: apiKey,
         });
 
-        // Generate AI response
-        const response = await ai.models.generateContent({
-            model: "gemini-3.8-flash",
+        // ==================================================
+        // GEMINI REQUEST
+        // ==================================================
 
-            contents: `
+        const response =
+            await ai.models.generateContent({
+                model: "gemini-3.5-flash",
+
+                contents: `
 You are TaskFlow AI, a productivity and project management assistant.
 
 Help users with:
@@ -70,21 +100,39 @@ Prefer:
 
 User message:
 ${message.trim()}
-            `,
-        });
+                `,
+            });
+
+        // ==================================================
+        // GET AI RESPONSE
+        // ==================================================
 
         const aiReply = response.text;
 
         if (!aiReply) {
-            console.error("❌ Gemini returned no text");
+
+            console.error(
+                "❌ Gemini returned no text"
+            );
 
             return res.status(500).json({
                 success: false,
-                message: "No response received from AI",
+                message:
+                    "No response received from AI",
             });
         }
 
-        console.log("✅ Gemini response received");
+        // ==================================================
+        // SUCCESS
+        // ==================================================
+
+        console.log(
+            "✅ Gemini response received"
+        );
+
+        console.log(
+            "================================="
+        );
 
         return res.status(200).json({
             success: true,
@@ -92,19 +140,44 @@ ${message.trim()}
         });
 
     } catch (error) {
-        console.error("=================================");
-        console.error("❌ AI ASSISTANT ERROR");
-        console.error("=================================");
-        console.error("Message:", error.message);
-        console.error("=================================");
+
+        // ==================================================
+        // ERROR
+        // ==================================================
+
+        console.error(
+            "================================="
+        );
+
+        console.error(
+            "❌ AI ASSISTANT ERROR"
+        );
+
+        console.error(
+            "================================="
+        );
+
+        console.error(
+            "Message:",
+            error.message
+        );
+
+        console.error(
+            "================================="
+        );
 
         return res.status(500).json({
             success: false,
-            message: "AI Assistant failed",
+            message:
+                "AI Assistant failed",
             error: error.message,
         });
     }
 };
+
+// ======================================================
+// EXPORT
+// ======================================================
 
 module.exports = {
     aiAssistant,
