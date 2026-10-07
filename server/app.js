@@ -5,6 +5,10 @@ const { Server } = require("socket.io");
 
 const { setIO } = require("./socket");
 
+// ======================================================
+// ROUTES
+// ======================================================
+
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const teamRoutes = require("./routes/teamRoutes");
@@ -21,17 +25,64 @@ const aiRoutes = require("./routes/aiRoutes");
 const app = express();
 
 // ======================================================
+// ALLOWED FRONTEND ORIGINS
+// ======================================================
+
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://task-flow-ai-liard.vercel.app",
+];
+
+// ======================================================
+// CORS CONFIGURATION
+// ======================================================
+
+const corsOptions = {
+    origin: function (origin, callback) {
+
+        // Allow requests without an Origin
+        // Example: Postman, server-to-server requests
+        if (!origin) {
+            return callback(null, true);
+        }
+
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
+
+        console.log("❌ CORS blocked origin:", origin);
+
+        return callback(
+            new Error(`CORS blocked for origin: ${origin}`)
+        );
+    },
+
+    credentials: true,
+
+    methods: [
+        "GET",
+        "POST",
+        "PUT",
+        "PATCH",
+        "DELETE",
+        "OPTIONS",
+    ],
+
+    allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+    ],
+};
+
+// ======================================================
 // MIDDLEWARE
 // ======================================================
 
-app.use(
-    cors({
-        origin: "http://localhost:5173",
-        credentials: true,
-    })
-);
+app.use(cors(corsOptions));
 
 app.use(express.json());
+
+app.use(express.urlencoded({ extended: true }));
 
 // ======================================================
 // ROOT API
@@ -39,6 +90,7 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
     res.json({
+        success: true,
         message: "TaskFlow AI API is running",
     });
 });
@@ -47,26 +99,57 @@ app.get("/", (req, res) => {
 // API ROUTES
 // ======================================================
 
-app.use("/api/v1/auth", authRoutes);
+app.use(
+    "/api/v1/auth",
+    authRoutes
+);
 
-app.use("/api/v1/users", userRoutes);
+app.use(
+    "/api/v1/users",
+    userRoutes
+);
 
-app.use("/api/v1/teams", teamRoutes);
+app.use(
+    "/api/v1/teams",
+    teamRoutes
+);
 
-app.use("/api/v1/projects", projectRoutes);
+app.use(
+    "/api/v1/projects",
+    projectRoutes
+);
 
-app.use("/api/v1/tasks", taskRoutes);
+app.use(
+    "/api/v1/tasks",
+    taskRoutes
+);
 
-app.use("/api/v1/comments", commentRoutes);
+app.use(
+    "/api/v1/comments",
+    commentRoutes
+);
 
-app.use("/api/v1/activities", activityRoutes);
+app.use(
+    "/api/v1/activities",
+    activityRoutes
+);
 
-app.use("/api/v1/notifications", notificationRoutes);
+app.use(
+    "/api/v1/notifications",
+    notificationRoutes
+);
 
-app.use("/api/v1/analytics", analyticsRoutes);
+app.use(
+    "/api/v1/analytics",
+    analyticsRoutes
+);
 
 // 🤖 AI Productivity Assistant
-app.use("/api/v1/ai", aiRoutes);
+
+app.use(
+    "/api/v1/ai",
+    aiRoutes
+);
 
 // ======================================================
 // HTTP SERVER
@@ -80,12 +163,33 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173",
+        origin: function (origin, callback) {
+
+            if (!origin) {
+                return callback(null, true);
+            }
+
+            if (allowedOrigins.includes(origin)) {
+                return callback(null, true);
+            }
+
+            console.log(
+                "❌ Socket.IO CORS blocked:",
+                origin
+            );
+
+            return callback(
+                new Error(
+                    `Socket.IO CORS blocked for origin: ${origin}`
+                )
+            );
+        },
 
         methods: [
             "GET",
             "POST",
             "PUT",
+            "PATCH",
             "DELETE",
         ],
 
@@ -93,7 +197,10 @@ const io = new Server(server, {
     },
 });
 
-// Make Socket.IO available to other backend files
+// ======================================================
+// MAKE SOCKET.IO AVAILABLE TO OTHER BACKEND FILES
+// ======================================================
+
 setIO(io);
 
 // ======================================================

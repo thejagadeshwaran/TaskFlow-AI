@@ -11,20 +11,26 @@ const startServer = async () => {
         console.log("🔄 Starting TaskFlow AI...");
         console.log("=================================");
 
-        // Connect MongoDB FIRST
+        // ==========================================
+        // CONNECT DATABASE FIRST
+        // ==========================================
+
         await connectDB();
 
         console.log("=================================");
         console.log("✅ Database connection completed");
         console.log("=================================");
 
-        // Start HTTP + Socket.IO server
-        server.listen(PORT, () => {
+        // ==========================================
+        // START HTTP + SOCKET.IO SERVER
+        // ==========================================
+
+        server.listen(PORT, "0.0.0.0", () => {
             console.log("=================================");
-            console.log("🚀 TaskFlow AI SERVER STARTED");
+            console.log("🚀 TASKFLOW AI SERVER STARTED");
             console.log("=================================");
-            console.log(`🌐 Server: http://localhost:${PORT}`);
-            console.log(`🔌 Socket.IO: http://localhost:${PORT}`);
+            console.log(`🌐 Port: ${PORT}`);
+            console.log("🔌 Socket.IO: Enabled");
             console.log("=================================");
         });
 
