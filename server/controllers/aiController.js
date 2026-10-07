@@ -13,7 +13,7 @@ const aiAssistant = async (req, res) => {
             });
         }
 
-        // Check API key
+        // Get Gemini API key
         const apiKey = process.env.GEMINI_API_KEY;
 
         if (!apiKey) {
@@ -40,7 +40,7 @@ const aiAssistant = async (req, res) => {
                             text: `
 You are TaskFlow AI, a productivity and project management assistant.
 
-Your responsibilities:
+Help users with:
 
 - Task management
 - Project planning
@@ -57,6 +57,7 @@ Your responsibilities:
 Give clear, practical and structured answers.
 
 Prefer:
+
 - Short explanations
 - Bullet points
 - Step-by-step solutions
@@ -95,8 +96,6 @@ ${message.trim()}
                             "Content-Type": "application/json",
                             "x-goog-api-key": apiKey,
                         },
-
-                        // Give Gemini enough time
                         timeout: 30000,
                     }
                 );
@@ -190,23 +189,4 @@ ${message.trim()}
 
 module.exports = {
     aiAssistant,
-};const express = require("express");
-
-const {
-    aiAssistant
-} = require("../controllers/aiController");
-
-const {
-    protect
-} = require("../middleware/authMiddleware");
-
-const router = express.Router();
-
-// AI Productivity Assistant
-router.post(
-    "/assistant",
-    protect,
-    aiAssistant
-);
-
-module.exports = router;
+};
