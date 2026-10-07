@@ -13,7 +13,6 @@ import "./App.css";
 
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
-
 import Dashboard from "./pages/Dashboard.jsx";
 import Teams from "./pages/Teams.jsx";
 import Tasks from "./pages/Tasks.jsx";
